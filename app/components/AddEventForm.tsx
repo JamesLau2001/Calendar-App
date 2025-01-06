@@ -34,7 +34,7 @@ type AddEventFormProps = {
           type="text"
           value={newEvent.description}
           onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
-          className="p-2 border border-gray-300 rounded-md flex-1"
+          className="p-2 border border-gray-300 flex-1 text-black rounded-md"
           placeholder="Event Description"
           required
         />

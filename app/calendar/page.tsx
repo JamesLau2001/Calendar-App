@@ -12,56 +12,52 @@ type Event = {
   description: string;
 };
 
-// Define the type for the events by day
-type EventsByDay = {
-  [key: string]: Event[]; // Keys are day names, values are arrays of events
+// Define the type for events grouped by date
+type EventsByDate = {
+  [key: string]: Event[]; // Keys are date strings (e.g., "2025-01-12"), values are arrays of events
 };
 
-// Define the type for a day (union type for specific day names)
-type Day = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
-
 export default function CalendarPage() {
-  const [selectedDay, setSelectedDay] = useState<Day>('Monday');
-  const [eventsByDay, setEventsByDay] = useState<EventsByDay>({
-    Monday: [],
-    Tuesday: [],
-    Wednesday: [],
-    Thursday: [],
-    Friday: [],
-    Saturday: [],
-    Sunday: [],
-  });
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [eventsByDate, setEventsByDate] = useState<EventsByDate>({});
   const [newEvent, setNewEvent] = useState<Event>({ time: '', description: '' });
+
+  const formatDate = (date: Date): string => {
+    // Format the date as "YYYY-MM-DD" (ISO format)
+    return date.toISOString().split('T')[0];
+  };
 
   const addEvent = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newEvent.time || !newEvent.description) return;
 
-    setEventsByDay({
-      ...eventsByDay,
-      [selectedDay]: [...eventsByDay[selectedDay], newEvent],
+    const dateKey = formatDate(selectedDate);
+
+    setEventsByDate({
+      ...eventsByDate,
+      [dateKey]: [...(eventsByDate[dateKey] || []), newEvent], // Add the event to the selected date
     });
 
     setNewEvent({ time: '', description: '' });
   };
 
   const deleteEvent = (time: string) => {
-    setEventsByDay({
-      ...eventsByDay,
-      [selectedDay]: eventsByDay[selectedDay].filter((event) => event.time !== time),
+    const dateKey = formatDate(selectedDate);
+
+    setEventsByDate({
+      ...eventsByDate,
+      [dateKey]: (eventsByDate[dateKey] || []).filter((event) => event.time !== time),
     });
   };
 
+  const dateKey = formatDate(selectedDate);
+
   return (
     <div className="min-h-screen bg-gray-50 p-8">
-      <Header selectedDay={selectedDay} />
-      <DaySelector
-        selectedDay={selectedDay}
-        setSelectedDay={setSelectedDay} // Pass state updater
-        days={Object.keys(eventsByDay) as Day[]} // Cast keys to Day[]
-      />
+      <Header selectedDate={selectedDate.toDateString()} />
+      <DaySelector selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
       <AddEventForm newEvent={newEvent} setNewEvent={setNewEvent} addEvent={addEvent} />
-      <Calendar events={eventsByDay[selectedDay]} deleteEvent={deleteEvent} />
+      <Calendar events={eventsByDate[dateKey] || []} deleteEvent={deleteEvent} />
     </div>
   );
 }

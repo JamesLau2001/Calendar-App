@@ -1,30 +1,29 @@
 import React from 'react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
-// Define props for DaySelector
 type DaySelectorProps = {
-  selectedDay: 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
-  setSelectedDay: (day: DaySelectorProps['selectedDay']) => void; // Function to update selectedDay
-  days: DaySelectorProps['selectedDay'][]; // List of days
+  selectedDate: Date;
+  setSelectedDate: (date: Date) => void;
 };
 
-export default function DaySelector({ selectedDay, setSelectedDay, days }: DaySelectorProps) {
+export default function DaySelector({ selectedDate, setSelectedDate }: DaySelectorProps) {
   return (
     <div className="mb-6">
-      <label htmlFor="day-selector" className="block text-lg font-semibold mb-2">
-        Select a Day:
+      <label htmlFor="date-selector" className="block text-lg font-semibold mb-2  text-blue-600 w-full">
+        Select a Date:
       </label>
-      <select
-        id="day-selector"
-        value={selectedDay}
-        onChange={(e) => setSelectedDay(e.target.value as DaySelectorProps['selectedDay'])} // Type casting
-        className="p-2 border border-gray-300 rounded-md text-blue-600"
-      >
-        {days.map((day) => (
-          <option key={day} value={day}>
-            {day}
-          </option>
-        ))}
-      </select>
+      <DatePicker
+        id="date-selector"
+        selected={selectedDate}
+        onChange={(date: Date | null) => {
+          if (date) {
+            setSelectedDate(date);
+          }
+        }}
+        className="p-2 border border-gray-300 rounded-md text-blue-600 w-full"
+        dateFormat="dd/MM/yyyy"
+      />
     </div>
   );
 }
